@@ -1,0 +1,15 @@
+version: "3"
+services:
+    deployer:
+        build:
+            context: .
+        image: terraform-deployer
+        network_mode: host
+        volumes:
+            - .:/workspace
+            - ~/.ssh:/root/.ssh:ro
+        entrypoint: /bin/bash
+        working_dir: /workspace
+        environment:
+            - TF_VAR_ibmcloud_apikey
+            - TF_VAR_artifactory_apikey
