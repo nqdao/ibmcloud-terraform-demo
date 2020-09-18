@@ -26,12 +26,6 @@ variable "use-existing-key" {
 }
 
 ##### NETWORK VARIABLES #####
-variable "host-interface-name" {
-  type  = string
-  default = "hostnet"
-  description = "Name of network interface on host."
-}
-
 variable "subnet-ipv4-cidr-block" {
   type = string
   default = "10.240.0.0/26"
@@ -43,12 +37,6 @@ variable "vm-image-name" {
   type = string
   default = "ibm-ubuntu-18-04-1-minimal-amd64-1"
   description = "Image name for VSI."
-}
-
-variable "vm-profile-name" {
-  type = string
-  default = "bx2-2x8"
-  description = "Instance Profile for VSI."
 }
 
 variable "vsi_count" {

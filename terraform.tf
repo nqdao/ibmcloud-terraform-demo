@@ -61,10 +61,9 @@ resource "ibm_is_instance" "vsi_instance" {
   count   = var.vsi_count
   name    = "${var.prefix}-vsi-${count.index}"
   image   = data.ibm_is_image.vm-image.id
-  profile = var.vm-profile-name
+  profile = "bx2-2x8"
 
   primary_network_interface {
-    name   = var.host-interface-name
     subnet = ibm_is_subnet.subnet.id
   }
 
