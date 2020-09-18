@@ -12,4 +12,3 @@ services:
         working_dir: /workspace
         environment:
             - TF_VAR_ibmcloud_apikey
-            - TF_VAR_artifactory_apikey

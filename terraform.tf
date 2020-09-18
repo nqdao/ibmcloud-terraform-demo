@@ -22,7 +22,7 @@ locals {
 
 ##### Read-only Resources #####
 data ibm_is_image "vm-image" {
-  name = var.vm-image-name
+  name = "ibm-ubuntu-18-04-1-minimal-amd64-1"
 }
 
 ##### VPC #####
@@ -41,7 +41,7 @@ resource "ibm_is_subnet" "subnet" {
   vpc             = ibm_is_vpc.vpc.id
   zone            = "us-south-1"
   ip_version      = "ipv4"
-  ipv4_cidr_block = var.subnet-ipv4-cidr-block
+  ipv4_cidr_block = "10.240.0.0/26"
   public_gateway  = ibm_is_public_gateway.public_gateway.id
 }
 
@@ -77,25 +77,25 @@ resource "ibm_is_instance" "vsi_instance" {
   keys = [local.ssh-key]
 }
 
-##### Deploy #####
-resource "local_file" "ansible-inventory-file" {
-  content = templatefile("${path.module}/templates/ansible_hosts.tpl",
-                        { private_key_file = local.ssh-private-key-path,
-                          hosts = zipmap(ibm_is_instance.vsi_instance[*].name,ibm_is_floating_ip.vsi_fip[*].address)
-                        })
-  filename = "ansible/ansible_hosts"
-}
+# ##### Deploy #####
+# resource "local_file" "ansible-inventory-file" {
+#   content = templatefile("${path.module}/templates/ansible_hosts.tpl",
+#                         { private_key_file = local.ssh-private-key-path,
+#                           hosts = zipmap(ibm_is_instance.vsi_instance[*].name,ibm_is_floating_ip.vsi_fip[*].address)
+#                         })
+#   filename = "ansible/ansible_hosts"
+# }
 
-resource "null_resource" "ansible-deploy" {
-  depends_on = [local_file.ansible-inventory-file]
-  triggers = {
-    ansible_file_id = local_file.ansible-inventory-file.id
-  }
-  provisioner "local-exec" {
-    when = create
-    command = "ANSIBLE_CONFIG=ansible/ansible.cfg ansible-playbook -i ansible/ansible_hosts ansible/nginx.yaml"
-  }
-}
+# resource "null_resource" "ansible-deploy" {
+#   depends_on = [local_file.ansible-inventory-file]
+#   triggers = {
+#     ansible_file_id = local_file.ansible-inventory-file.id
+#   }
+#   provisioner "local-exec" {
+#     when = create
+#     command = "ANSIBLE_CONFIG=ansible/ansible.cfg ansible-playbook -i ansible/ansible_hosts ansible/nginx.yaml"
+#   }
+# }
 
 ##### Output #####
 output "vsi-info" {

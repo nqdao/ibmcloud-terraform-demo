@@ -25,27 +25,9 @@ variable "use-existing-key" {
   description = "Whether Terraform should use an uploaded key in the cloud."
 }
 
-##### NETWORK VARIABLES #####
-variable "subnet-ipv4-cidr-block" {
-  type = string
-  default = "10.240.0.0/26"
-  description = "CIDR block for fabric subnet."
-}
-
 ##### COMPUTE VARIABLES #####
-variable "vm-image-name" {
-  type = string
-  default = "ibm-ubuntu-18-04-1-minimal-amd64-1"
-  description = "Image name for VSI."
-}
-
 variable "vsi_count" {
   type = number
   default = 3
   description = "Number of vsi instances."
-}
-
-variable "ansible_host_template" {
-  type = string
-  default = "%s ansible_host=%s"
 }
