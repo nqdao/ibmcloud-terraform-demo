@@ -78,12 +78,6 @@ resource "ibm_is_instance" "vsi_instance" {
 }
 
 ##### Deploy #####
-locals {
-  hosts = formatlist(var.ansible_host_template,
-                     ibm_is_instance.vsi_instance[*].name,
-                     ibm_is_floating_ip.vsi_fip[*].address)
-}
-
 resource "local_file" "ansible-inventory-file" {
   content = templatefile("${path.module}/templates/ansible_hosts.tpl",
                         { private_key_file = local.ssh-private-key-path,
