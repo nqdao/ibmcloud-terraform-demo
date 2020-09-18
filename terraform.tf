@@ -80,6 +80,19 @@ resource "ibm_is_instance" "vsi_instance" {
   keys = [local.ssh-key]
 }
 
+resource "ibm_container_vpc_cluster" "iks_cluster" {
+  name = "${var.prefix}-iks"
+  vpc_id = ibm_is_vpc.vpc.id
+  kube_version = "1.17.7"
+  flavor = "bx2.2x8"
+  worker_count = 1
+  resource_group_id = data.ibm_resource_group.default-resource-group.id
+  zones {
+    subnet_id = ibm_is_subnet.subnet.id
+    name = "us-south-1"
+  }
+}
+
 ##### Output #####
 output "vsi-fip" {
   value       = ibm_is_floating_ip.vsi-fip.*.address
