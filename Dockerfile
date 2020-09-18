@@ -1,4 +1,4 @@
-FROM ibmterraform/terraform-provider-ibm-docker:v1.2.4
+FROM ibmterraform/terraform-provider-ibm-docker:v1.8.0
 
 RUN set -ex \
         && apk update \

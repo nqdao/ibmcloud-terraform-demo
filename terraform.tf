@@ -1,5 +1,5 @@
 provider "ibm" {
-  ibmcloud_api_key = "${var.ibmcloud_apikey}"
+  ibmcloud_api_key = var.ibmcloud_apikey
   generation = 2
 }
 
