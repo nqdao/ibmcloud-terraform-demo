@@ -91,10 +91,16 @@ resource "ibm_container_vpc_cluster" "iks_cluster" {
     subnet_id = ibm_is_subnet.subnet.id
     name = "us-south-1"
   }
+  wait_till = "MasterNodeReady"
 }
 
 ##### Output #####
 output "vsi-fip" {
   value       = ibm_is_floating_ip.vsi-fip.*.address
   description = "Floating IP addresses to access the deployer."
+}
+
+output "iks-public-endpoint" {
+  value = ibm_container_vpc_cluster.iks_cluster.public_service_endpoint_url
+  description = "Public service endpoint of IKS cluster."
 }
