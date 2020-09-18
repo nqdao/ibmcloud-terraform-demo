@@ -11,7 +11,7 @@ data "ibm_is_ssh_key" "existing-ssh-key" {
 
 resource "ibm_is_ssh_key" "ssh-key" {
   count      = var.use-existing-key ? 0 : 1
-  name       = "${var.prefix}-${var.ssh-key-name}"
+  name       = var.ssh-key-name
   public_key = file(var.ssh-pub-key-path)
 }
 
