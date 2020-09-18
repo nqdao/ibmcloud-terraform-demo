@@ -83,11 +83,23 @@ locals {
                      ibm_is_instance.vsi_instance[*].name,
                      ibm_is_floating_ip.vsi_fip[*].address)
 }
+
 resource "local_file" "ansible-inventory-file" {
   content = templatefile("${path.module}/templates/ansible_hosts.tpl",
                         { private_key_file = local.ssh-private-key-path,
                           hosts = local.hosts})
   filename = "ansible/ansible_hosts"
+}
+
+resource "null_resource" "ansible-deploy" {
+  depends_on = [local_file.ansible-inventory-file]
+  triggers = {
+    ansible_file_id = local_file.ansible-inventory-file.id
+  }
+  provisioner "local-exec" {
+    when = create
+    command = "ANSIBLE_CONFIG=ansible/ansible.cfg ansible-playbook -i ansible/ansible_hosts ansible/nginx.yaml"
+  }
 }
 
 ##### Output #####
