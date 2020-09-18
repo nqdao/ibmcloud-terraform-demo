@@ -62,7 +62,7 @@ resource "ibm_is_instance" "vsi_instance" {
   count   = var.vsi_count
   name    = "${var.prefix}-vsi-${count.index}"
   image   = data.ibm_is_image.vm-image.id
-  profile = "bx2-2x8"
+  profile = "bx2-4x16"
 
   primary_network_interface {
     subnet = ibm_is_subnet.subnet.id
@@ -77,25 +77,25 @@ resource "ibm_is_instance" "vsi_instance" {
   keys = [local.ssh-key]
 }
 
-# ##### Deploy #####
-# resource "local_file" "ansible-inventory-file" {
-#   content = templatefile("${path.module}/templates/ansible_hosts.tpl",
-#                         { private_key_file = local.ssh-private-key-path,
-#                           hosts = zipmap(ibm_is_instance.vsi_instance[*].name,ibm_is_floating_ip.vsi_fip[*].address)
-#                         })
-#   filename = "ansible/ansible_hosts"
-# }
+##### Deploy #####
+resource "local_file" "ansible-inventory-file" {
+  content = templatefile("${path.module}/templates/ansible_hosts.tpl",
+                        { private_key_file = local.ssh-private-key-path,
+                          hosts = zipmap(ibm_is_instance.vsi_instance[*].name,ibm_is_floating_ip.vsi_fip[*].address)
+                        })
+  filename = "ansible/ansible_hosts"
+}
 
-# resource "null_resource" "ansible-deploy" {
-#   depends_on = [local_file.ansible-inventory-file]
-#   triggers = {
-#     ansible_file_id = local_file.ansible-inventory-file.id
-#   }
-#   provisioner "local-exec" {
-#     when = create
-#     command = "ANSIBLE_CONFIG=ansible/ansible.cfg ansible-playbook -i ansible/ansible_hosts ansible/nginx.yaml"
-#   }
-# }
+resource "null_resource" "ansible-deploy" {
+  depends_on = [local_file.ansible-inventory-file]
+  triggers = {
+    ansible_file_id = local_file.ansible-inventory-file.id
+  }
+  provisioner "local-exec" {
+    when = create
+    command = "ANSIBLE_CONFIG=ansible/ansible.cfg ansible-playbook -i ansible/ansible_hosts ansible/nginx.yaml"
+  }
+}
 
 ##### Output #####
 output "vsi-info" {
