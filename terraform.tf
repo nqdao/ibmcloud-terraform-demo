@@ -17,6 +17,7 @@ resource "ibm_is_ssh_key" "ssh-key" {
 
 locals {
   ssh-key = var.use-existing-key ? data.ibm_is_ssh_key.existing-ssh-key[0].id : ibm_is_ssh_key.ssh-key[0].id
+  ssh-private-key-path = replace(var.ssh-pub-key-path, ".pub", "")
 }
 
 ##### Read-only Resources #####
@@ -24,12 +25,12 @@ data ibm_is_image "vm-image" {
   name = var.vm-image-name
 }
 
-##### Network #####
+##### VPC #####
 resource "ibm_is_vpc" "vpc" {
   name = "${var.prefix}-vpc"
 }
 
-resource "ibm_is_public_gateway" "public-gateway" {
+resource "ibm_is_public_gateway" "public_gateway" {
   name = "${var.prefix}-gateway"
   vpc  = ibm_is_vpc.vpc.id
   zone = "us-south-1"
@@ -41,19 +42,19 @@ resource "ibm_is_subnet" "subnet" {
   zone            = "us-south-1"
   ip_version      = "ipv4"
   ipv4_cidr_block = var.subnet-ipv4-cidr-block
-  public_gateway  = ibm_is_public_gateway.public-gateway.id
+  public_gateway  = ibm_is_public_gateway.public_gateway.id
 }
 
-resource "ibm_is_security_group_rule" "secgroup-rule" {
+resource "ibm_is_security_group_rule" "secgroup_rule" {
   group     = ibm_is_vpc.vpc.default_security_group
   direction = "inbound"
   remote    = "0.0.0.0/0"
 }
 
-resource "ibm_is_floating_ip" "vsi-fip" {
+resource "ibm_is_floating_ip" "vsi_fip" {
   count  = var.vsi_count
   name   = "${var.prefix}-vsi-fip-${count.index}"
-  target = ibm_is_instance.vsi_instance[count.index].primary_network_interface.0.id
+  target = ibm_is_instance.vsi_instance[count.index].primary_network_interface[0].id
 }
 
 ##### Compute #####
@@ -76,8 +77,16 @@ resource "ibm_is_instance" "vsi_instance" {
   keys = [local.ssh-key]
 }
 
+##### Deploy #####
+resource "local_file" "ansible-inventory-file" {
+  content = templatefile("${path.module}/templates/ansible_hosts.tpl",
+                        { private_key_file = local.ssh-private-key-path,
+                          addresses = ibm_is_floating_ip.vsi_fip[*].address})
+  filename = "ansible/ansible_hosts"
+}
+
 ##### Output #####
 output "vsi-fip" {
-  value       = ibm_is_floating_ip.vsi-fip.*.address
+  value       = ibm_is_floating_ip.vsi_fip[*].address
   description = "Floating IP addresses to access the deployer."
 }
