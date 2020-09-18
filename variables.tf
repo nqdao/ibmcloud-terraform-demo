@@ -28,6 +28,6 @@ variable "use-existing-key" {
 ##### COMPUTE VARIABLES #####
 variable "vsi_count" {
   type = number
-  default = 3
+  default = 1
   description = "Number of vsi instances."
 }
