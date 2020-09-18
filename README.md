@@ -14,7 +14,7 @@ N.B. It is recommended that you generate a **new SSH key that is not passphrase-
 ## Setup
 1. Clone this repository.
 ```
-$ git clone git@github.ibm.com/Nhat-Quang-Dao/terraform-demo
+$ git clone git@github.com:nqdao/ibmcloud-terraform-demo.git
 ```
 2. Run docker-compose to launch deployer docker container.
 ```
