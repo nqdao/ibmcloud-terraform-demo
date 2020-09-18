@@ -59,7 +59,7 @@ variable "vsi-count" {
 
 variable "worker_count" {
   type = number
-  default = 1
+  default = 3
   description = "Number of IKS worker instances."
 }
 

@@ -85,7 +85,7 @@ resource "ibm_container_vpc_cluster" "iks_cluster" {
   vpc_id = ibm_is_vpc.vpc.id
   kube_version = "1.17.7"
   flavor = "bx2.2x8"
-  worker_count = 1
+  worker_count = var.worker_count
   resource_group_id = data.ibm_resource_group.default-resource-group.id
   zones {
     subnet_id = ibm_is_subnet.subnet.id
