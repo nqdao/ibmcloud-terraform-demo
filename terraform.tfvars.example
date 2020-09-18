@@ -1,9 +1,7 @@
 # Overrides variable default values in variables.tf.
 # Rename this file to "terraform.tfvars" and change variable values to be appropriate for your environment.
-prefix = "<your initial>"
+prefix = "demo"
 ibmcloud_apikey = "<your ibmcloud key>"
 ssh-pub-key-path = "~/.ssh/id_rsa.pub"
 ssh-key-name = "tf-deploy-key"
 use-existing-key = false
-
-vsi-count = 1

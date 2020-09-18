@@ -19,12 +19,9 @@ locals {
   ssh-key = var.use-existing-key ? data.ibm_is_ssh_key.existing-ssh-key[0].id : ibm_is_ssh_key.ssh-key[0].id
 }
 
+##### Read-only Resources #####
 data ibm_is_image "vm-image" {
   name = var.vm-image-name
-}
-
-data "ibm_resource_group" "default-resource-group" {
-  is_default = true
 }
 
 ##### Network #####
@@ -54,14 +51,14 @@ resource "ibm_is_security_group_rule" "secgroup-rule" {
 }
 
 resource "ibm_is_floating_ip" "vsi-fip" {
-  count = var.vsi-count
+  count  = var.vsi_count
   name   = "${var.prefix}-vsi-fip-${count.index}"
   target = ibm_is_instance.vsi_instance[count.index].primary_network_interface.0.id
 }
 
 ##### Compute #####
 resource "ibm_is_instance" "vsi_instance" {
-  count = var.vsi-count
+  count   = var.vsi_count
   name    = "${var.prefix}-vsi-${count.index}"
   image   = data.ibm_is_image.vm-image.id
   profile = var.vm-profile-name
@@ -80,27 +77,8 @@ resource "ibm_is_instance" "vsi_instance" {
   keys = [local.ssh-key]
 }
 
-resource "ibm_container_vpc_cluster" "iks_cluster" {
-  name = "${var.prefix}-iks"
-  vpc_id = ibm_is_vpc.vpc.id
-  kube_version = "1.17.7"
-  flavor = "bx2.2x8"
-  worker_count = var.worker_count
-  resource_group_id = data.ibm_resource_group.default-resource-group.id
-  zones {
-    subnet_id = ibm_is_subnet.subnet.id
-    name = "us-south-1"
-  }
-  wait_till = "MasterNodeReady"
-}
-
 ##### Output #####
 output "vsi-fip" {
   value       = ibm_is_floating_ip.vsi-fip.*.address
   description = "Floating IP addresses to access the deployer."
-}
-
-output "iks-public-endpoint" {
-  value = ibm_container_vpc_cluster.iks_cluster.public_service_endpoint_url
-  description = "Public service endpoint of IKS cluster."
 }

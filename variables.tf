@@ -47,20 +47,14 @@ variable "vm-image-name" {
 
 variable "vm-profile-name" {
   type = string
-  default = "bx2-8x32"
+  default = "bx2-2x8"
   description = "Instance Profile for VSI."
 }
 
-variable "vsi-count" {
+variable "vsi_count" {
   type = number
   default = 1
   description = "Number of vsi instances."
-}
-
-variable "worker_count" {
-  type = number
-  default = 3
-  description = "Number of IKS worker instances."
 }
 
 variable "ansible_host_template" {
