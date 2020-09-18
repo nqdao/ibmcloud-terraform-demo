@@ -47,5 +47,5 @@ variable "vsi_count" {
 
 variable "ansible_host_template" {
   type = string
-  default = "%s ansible_host=%s fabric_ip=%s uuid=%s"
+  default = "%s ansible_host=%s"
 }
