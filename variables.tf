@@ -41,7 +41,7 @@ variable "vm-image-name" {
 
 variable "vsi_count" {
   type = number
-  default = 1
+  default = 3
   description = "Number of vsi instances."
 }
 

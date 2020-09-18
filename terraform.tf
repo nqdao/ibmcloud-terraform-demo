@@ -87,7 +87,8 @@ locals {
 resource "local_file" "ansible-inventory-file" {
   content = templatefile("${path.module}/templates/ansible_hosts.tpl",
                         { private_key_file = local.ssh-private-key-path,
-                          hosts = local.hosts})
+                          hosts = zipmap(ibm_is_instance.vsi_instance[*].name,ibm_is_floating_ip.vsi_fip[*].address)
+                        })
   filename = "ansible/ansible_hosts"
 }
 
@@ -103,7 +104,7 @@ resource "null_resource" "ansible-deploy" {
 }
 
 ##### Output #####
-output "vsi-fip" {
-  value       = ibm_is_floating_ip.vsi_fip[*].address
-  description = "Floating IP addresses to access the deployer."
+output "vsi-info" {
+  value       = zipmap(ibm_is_instance.vsi_instance[*].name, ibm_is_floating_ip.vsi_fip[*].address)
+  description = "VSI access information."
 }
